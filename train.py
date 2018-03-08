@@ -12,7 +12,7 @@ import numpy as np
 import time
 import os
 
-data_dir = "/Users/eason/Documents/OSU/2018_Winter_Term/CS535/final project/dataset/images"
+data_dir = "/scratch/liaoi/images"
 data_path = {'train': "./Train_Label.csv", 'test': "Test_Label.csv"}
 save_dir = "./savedModels"
 
