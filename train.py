@@ -1,7 +1,7 @@
 from __future__ import print_function
 from __future__ import division
-import Model
-import CXRDataset
+import Model as Model
+import CXRDataset as CXRDataset
 import torch
 import torch.optim as optim
 from torch.autograd import Variable
