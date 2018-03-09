@@ -1,4 +1,4 @@
-import pandas as pd
+import numpy as np
 import csv
 
 def transformFile(train_array, test_array, train_file_name, test_file_name):
@@ -10,13 +10,7 @@ def transformFile(train_array, test_array, train_file_name, test_file_name):
                    'Mass',
                    'Nodule',
                    'Pneumonia',
-                   'Pneumothorax',
-                   'Consolidation',
-                   'Edema',
-                   'Emphysema',
-                   'Fibrosis',
-                   'Pleural_Thickening',
-                   'Hernia']
+                   'Pneumothorax']
 
     with open('./Data_Entry_2017.csv') as f:
         with open(train_file_name, "w+") as wf_train:
@@ -40,10 +34,13 @@ def transformFile(train_array, test_array, train_file_name, test_file_name):
                             data.append(1)
                         else:
                             data.append(0)
-                    if data[0] in test_array:
-                        writer_test.writerow(data)
-                    else:
-                        writer_train.writerow(data)
+
+                    temp = np.array(data[1:])
+                    if row[1] == 'No Finding' or sum(temp == 1) > 0 :
+                        if data[0] in test_array:
+                            writer_test.writerow(data)
+                        else:
+                            writer_train.writerow(data)
 
 def getTxtContent(txt_file):
     result = []
