@@ -10,7 +10,7 @@ class Model(nn.Module):
 
         self.transition = nn.Conv2d(2048, 2048, kernel_size=3, padding=1, stride=1, bias=False)
         self.globalPool = nn.MaxPool2d(32)
-        self.prediction = nn.Sequential(nn.Linear(2048, 14), nn.Sigmoid())
+        self.prediction = nn.Sequential(nn.Linear(2048, 8), nn.Sigmoid())
 
 
     def forward(self, x):
