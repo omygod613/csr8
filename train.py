@@ -1,6 +1,6 @@
 from __future__ import print_function
 from __future__ import division
-from Model import Model
+from Model import *
 from CXRDataset import CXRDataset
 import torch
 import torch.optim as optim
@@ -18,9 +18,11 @@ save_dir = "./savedModels"
 
 
 def loadData(batch_size):
-    trans = transforms.Compose(
-                                # [transforms.Resize([227,227]),
-                                transforms.ToTensor()])
+    trans = transforms.Compose([
+                                transforms.Resize(299), # 224, 299
+                                transforms.ToTensor(),
+                                # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+                                ])
     image_datasets = {x: CXRDataset(data_path[x], data_dir, transform=trans) for x in ['train', 'test']}
     dataloders = {x: DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True, num_workers=4)
                   for x in ['train', 'test']}
@@ -44,6 +46,7 @@ def weighted_BCELoss(output, target, weights=None):
 
 
 def train_model(model, optimizer, num_epochs=10, batch_size=2):
+    batch_size = 12
     since = time.time()
     dataloders, dataset_sizes, class_names = loadData(batch_size)
     best_model_wts = model.state_dict()
@@ -144,7 +147,7 @@ def train_model(model, optimizer, num_epochs=10, batch_size=2):
                 best_auc = epoch_auc
                 best_auc_ave = epoch_auc_ave
                 best_model_wts = model.state_dict()
-                saveInfo(model)
+                # saveInfo(model)
         print()
 
     time_elapsed = time.time() - since
@@ -168,10 +171,11 @@ def saveInfo(model):
 
 
 if __name__ == '__main__':
-    model = Model()
+    model = InceptionV3()
     optimizer = optim.Adam([
-        {'params': model.transition.parameters()},
-        {'params': model.globalPool.parameters()},
+        {'params': model.model_ft.parameters()},
+        # {'params':model.transition.parameters()},
+        # {'params':model.globalPool.parameters()},
         {'params': model.prediction.parameters()}],
         lr=3e-5)
 
