@@ -19,8 +19,9 @@ save_dir = "./savedModels"
 
 def loadData(batch_size):
     trans = transforms.Compose([
-                                transforms.Resize(299), # 224, 299
-                                transforms.ToTensor(),
+                                transforms.Resize(224), # 224, 299
+                                # transforms.RandomCrop(224),
+                                transforms.ToTensor()
                                 # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                                 ])
     image_datasets = {x: CXRDataset(data_path[x], data_dir, transform=trans) for x in ['train', 'test']}
@@ -171,7 +172,7 @@ def saveInfo(model):
 
 
 if __name__ == '__main__':
-    model = InceptionV3()
+    model = DenseNet201()
     optimizer = optim.Adam([
         {'params': model.model_ft.parameters()},
         # {'params':model.transition.parameters()},

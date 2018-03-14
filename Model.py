@@ -159,15 +159,15 @@ class SqueezeNet1_0(nn.Module):
         return x
         
 
-class InceptionV3(nn.Module):
-    def __init__(self):
-        super(InceptionV3, self).__init__()
-        self.model_ft = models.inception_v3(pretrained=True)
-        # for param in self.model_ft.parameters():
-        #     param.requires_grad = False
-        self.prediction = nn.Sequential(nn.Linear(1000, 8), nn.Sigmoid())
+# class InceptionV3(nn.Module):
+#     def __init__(self):
+#         super(InceptionV3, self).__init__()
+#         self.model_ft = models.inception_v3(pretrained=True)
+#         # for param in self.model_ft.parameters():
+#         #     param.requires_grad = False
+#         self.prediction = nn.Sequential(nn.Linear(1000, 8), nn.Sigmoid())
 
-    def forward(self, x):
-        x = self.model_ft(x)
-        x = self.prediction(x)
-        return x
+#     def forward(self, x):
+#         x = self.model_ft(x)
+#         x = self.prediction(x)
+#         return x
