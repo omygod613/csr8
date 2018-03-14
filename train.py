@@ -19,8 +19,8 @@ save_dir = "./savedModels"
 
 def loadData(batch_size):
     trans = transforms.Compose([
-                                transforms.Resize(224), # 224, 299
-                                # transforms.RandomCrop(224),
+                                # transforms.Resize(224), # 224, 299
+                                transforms.RandomCrop(224),
                                 transforms.ToTensor()
                                 # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                                 ])
@@ -172,7 +172,7 @@ def saveInfo(model):
 
 
 if __name__ == '__main__':
-    model = DenseNet201()
+    model = InceptionV3()
     optimizer = optim.Adam([
         {'params': model.model_ft.parameters()},
         # {'params':model.transition.parameters()},
