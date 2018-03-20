@@ -12,16 +12,20 @@ import numpy as np
 import time
 import os
 
-data_dir = "/scratch/liaoi/images"
-data_path = {'train': "./Train_Label.csv", 'test': "Test_Label.csv"}
+data_dir = "/scratch/liaoi/images_all_0.9_224"
+# data_path = {'train': "./Train_Label.csv", 'test': "Test_Label.csv"}
+data_path = {'train': "train_all.csv", 'test': "test_all.csv"}
 save_dir = "./savedModels"
 
 
 def loadData(batch_size):
     trans = transforms.Compose([
+                                # transforms.Grayscale(),
                                 # transforms.Resize(224), # 224, 299
-                                transforms.RandomCrop(224),
-                                transforms.ToTensor()
+                                # transforms.RandomCrop(224),
+                                # transforms.CenterCrop(224), #bad
+                                # transforms.RandomHorizontalFlip(),
+                                transforms.ToTensor(),
                                 # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                                 ])
     image_datasets = {x: CXRDataset(data_path[x], data_dir, transform=trans) for x in ['train', 'test']}
@@ -47,7 +51,7 @@ def weighted_BCELoss(output, target, weights=None):
 
 
 def train_model(model, optimizer, num_epochs=10, batch_size=2):
-    batch_size = 12
+    batch_size = 16
     since = time.time()
     dataloders, dataset_sizes, class_names = loadData(batch_size)
     best_model_wts = model.state_dict()
@@ -91,6 +95,8 @@ def train_model(model, optimizer, num_epochs=10, batch_size=2):
                     weights = torch.FloatTensor(weights).cuda()
                 else:
                     weights = None
+
+                weights = None
                 # wrap them in Variable
                 inputs = inputs.cuda()
                 labels = labels.cuda()
@@ -106,6 +112,12 @@ def train_model(model, optimizer, num_epochs=10, batch_size=2):
                 # forward
                 outputs = model(inputs)
                 out_data = outputs.data
+
+                # if isinstance(outputs, tuple):
+                #     loss = sum((criterion(o,labels) for o in outputs))
+                # else:
+                #     loss = criterion(outputs, labels)
+
                 loss = weighted_BCELoss(outputs, labels, weights=weights)
 
                 # backward + optimize only if in training phase
@@ -172,13 +184,25 @@ def saveInfo(model):
 
 
 if __name__ == '__main__':
-    model = InceptionV3()
+    model = ResNet50_mod()
+    model.cuda()
     optimizer = optim.Adam([
         {'params': model.model_ft.parameters()},
-        # {'params':model.transition.parameters()},
-        # {'params':model.globalPool.parameters()},
-        {'params': model.prediction.parameters()}],
-        lr=3e-5)
+        {'params': model.prediction.parameters()},
 
-    model.cuda()
-    model = train_model(model, optimizer, num_epochs=5)
+        # {'params': model.conv1.parameters()},
+        # {'params': model.conv2.parameters()},
+        # {'params': model.conv3.parameters()},
+        # {'params': model.conv4.parameters()},
+        
+        # # {'params': model.conv5.parameters()}, #
+        # # {'params': model.conv6.parameters()}, #
+        # # {'params': model.conv7.parameters()}, #
+        # # {'params': model.conv8.parameters()}, #
+
+        # {'params': model.fc1.parameters()},
+        # # {'params': model.fc_mid.parameters()}, #
+        # {'params': model.fc2.parameters()},      
+        ], lr=1e-5)
+
+    model = train_model(model, optimizer, num_epochs=9)
